@@ -89,16 +89,19 @@ setup() ->
     setup_lager().
 
 setup_lager() ->
+    Handlers = gen_event:which_handlers(error_logger),
+    HasTTY = lists:member(error_logger_tty_h, Handlers),
     error_logger:tty(false),
     application:load(lager),
     application:set_env(lager, handlers, [{lager_console_backend, info}]),
     application:set_env(lager, error_logger_redirect, false),
     application:set_env(lager, async_threshold, undefined),
-    lager:start().
+    lager:start(),
+    HasTTY.
 
-cleanup(_) ->
+cleanup(HasTTY) ->
     application:stop(lager),
     application:stop(goldrush),
-    error_logger:tty(true).
+    error_logger:tty(HasTTY).
 
 -endif.
