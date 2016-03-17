@@ -64,9 +64,9 @@ emergency(Fmt, Args) ->
 
 -spec set_level(atom()) -> ok.
 set_level(Level) ->
-    {ok, Handlers} = application:get_env(lager, handlers),
-    lists:foreach(fun({Handler, _}) ->
-        lager:set_loglevel(Handler, Level)
+    Handlers = gen_event:which_handlers(lager_event),
+    lists:foreach(fun(Handler) ->
+        ok = lager:set_loglevel(Handler, Level)
     end, Handlers).
 
 
